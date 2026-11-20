@@ -29,7 +29,7 @@ SQLite 使用 Compose 命名卷 `measurements`。应用启动按内容摘要幂�
 | 量纲校准 | `GET /api/calibration/{source_id}` | 增益、灵敏度、峰值与有效源行 |
 | 能量衰减 | `GET /api/decay/{source_id}` | 反向能量积分与原点 |
 | 拟合时段 | `GET /api/fit/{source_id}` | 回归区间、R² 与 RT60 |
-| 噪声判废 | `GET /api/noise/{source_id}` | 测噪区间和动态范围 |
+| 噪声判废 | `GET /api/noise/{source_id}` | 背景段判定、剔除起伏和衰减档位 |
 | 频段勾稽 | `GET /api/reconcile/{source_id}` | 频带、采样行守恒和拟合标差 |
 | 复测归档 | `POST /api/runs`、`POST /api/runs/{id}/rerun` | 批次、摘要、复测与附件 |
 

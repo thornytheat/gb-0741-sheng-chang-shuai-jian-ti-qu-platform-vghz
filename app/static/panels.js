@@ -90,12 +90,23 @@ export function noisePanel(noise) {
   depth.max = Math.max(60, Math.ceil(noise.usable_depth_db));
   depth.value = noise.usable_depth_db;
   depth.setAttribute('aria-label', '可用衰减深度');
-  $('noise-body').replaceChildren(specs([
+  const classes = {T30: 'T20 / T30', T20: 'T20', NONE: '无', REMEASURE: '退回补测'};
+  const decisions = {whole: '整段', segment: '平稳段', undecided: '退回补测'};
+  const items = [
     ['峰值至噪声 / dB', fixed(noise.peak_to_noise_db, 1)], ['噪声功率 / Pa²', scientific(noise.noise_power_pa2)],
     ['可用深度 / dB', fixed(noise.usable_depth_db, 1)], ['噪声底 / dB', fixed(noise.floor_db, 1)],
     ['可用截止 / s', fixed(noise.usable_until_s)], ['测噪起点 / s', fixed(noise.noise_from_s)],
-    ['最低余量 / dB', noise.required_margin_db], ['适用档位', noise.supports_t30 ? 'T20 / T30' : noise.supports_t20 ? 'T20' : '无'],
-  ]), depth);
+    ['最低余量 / dB', noise.required_margin_db], ['适用档位', classes[noise.decay_class] ?? '无'],
+  ];
+  const bg = noise.background;
+  if (bg) {
+    const span = (item) => `${fixed(item.from_s)}–${fixed(item.to_s)} s · 行 ${item.from_line}–${item.to_line}`;
+    items.push(['背景判定', decisions[bg.decision] ?? '—'],
+      ['采用的背景段', bg.adopted.map(span).join('；') || '—'],
+      ['排除的起伏', bg.excluded.length ? bg.excluded.map((item) => `${span(item)}（+${fixed(item.excess_db, 1)} dB）`).join('；') : '无'],
+      ['判定依据', bg.summary]);
+  }
+  $('noise-body').replaceChildren(specs(items), depth);
 }
 
 export function reconcile(data, band, pick) {
@@ -104,7 +115,8 @@ export function reconcile(data, band, pick) {
   $('difference').textContent = totals.band_difference;
   $('balance').textContent = data.status === 'MATCHED' ? '频带、样本已对平' : '存在勾稽差额';
   table('band-table', ['Hz', '判定', 'T20 / s', 'T30 / s', '标差', '证据'], data.bands.map((row) => {
-    const [label, style] = states[row.status];
+    const remeasure = row.findings?.some((item) => item?.code === 'NOISE_UNSTABLE');
+    const [label, style] = remeasure ? ['退回补测', 'bad'] : states[row.status];
     return [action(`${row.band_hz}`, () => pick(row.band_hz)), el('span', label, `status-label ${style}`),
       fixed(row.t20_s), fixed(row.t30_s), row.gap_flag ? el('span', `${fixed(100 * row.relative_gap, 1)}%`, 'warn') : '—',
       action('查看', () => evidence(`${row.band_hz} Hz 判定`, row))];

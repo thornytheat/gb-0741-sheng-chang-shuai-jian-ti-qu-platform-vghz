@@ -46,6 +46,15 @@ export function draw(canvas, curve, fit, gate, cursor) {
   if (gate) {
     const x = px(gate.noise_from_s);
     ctx.fillStyle = '#ad5d3615'; ctx.fillRect(x, top, right - x, bottom - top);
+    const bg = gate.background;
+    if (bg && bg.decision !== 'undecided') {
+      ctx.fillStyle = '#3a7c1118';
+      for (const span of bg.adopted) ctx.fillRect(px(span.from_s), top, px(span.to_s) - px(span.from_s), bottom - top);
+    }
+    if (bg) {
+      ctx.fillStyle = '#b0303028';
+      for (const span of bg.excluded) ctx.fillRect(px(span.from_s), top, px(span.to_s) - px(span.from_s), bottom - top);
+    }
   }
   if (range != null) line(px(range), top, px(range), bottom, noise, 1, [3, 3]);
   if (floor != null && floor >= base) line(left, py(floor), right, py(floor), noise, 1.3, [4, 4]);

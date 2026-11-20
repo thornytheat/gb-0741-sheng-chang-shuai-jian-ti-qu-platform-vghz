@@ -11,7 +11,8 @@ def compare(row):
     failures = [value['error'] for key, value in row.items() if key in ('t20', 't30') and value['error']]
     if t20 is not None or t30 is not None:
         category = 'FIT'
-    elif any(item['code'] in {'NO_ENERGY', 'TAIL_TOO_SHORT', 'NON_DECAYING', 'LOW_LINEARITY', 'WINDOW_TOO_SHORT'} for item in failures):
+    elif any(item['code'] in {'NO_ENERGY', 'TAIL_TOO_SHORT', 'NON_DECAYING', 'LOW_LINEARITY', 'WINDOW_TOO_SHORT',
+                              'NOISE_UNSTABLE'} for item in failures):
         category = 'ISOLATED'
     else:
         category = 'INSUFFICIENT'

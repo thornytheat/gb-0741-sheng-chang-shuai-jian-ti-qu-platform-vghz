@@ -13,6 +13,7 @@ def render_curve(curve, limit=900):
     return {'band_hz': signal.hz, 'sample_rate_hz': signal.rate, 'peak_index': signal.peak_index,
             'tail_start_s': curve.tail_from / signal.rate, 'initial_energy_pa2_s': curve.first_energy / signal.rate,
             'noise_power_pa2': curve.noise_power, 'floor_db': curve.floor_db, 'error': curve.error,
+            'background': curve.background,
             'full_points': len(curve.db), 'points': [{'t': index / signal.rate, 'db': curve.db[index],
                          'source_line': signal.line_numbers[signal.peak_index + index]} for index in indices]}
 

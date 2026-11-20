@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from math import fsum, log10
 from statistics import median
 
+from app.modules.m3_decay.background import assess_background
 from app.reasons import reason
 
 TAIL_FRACTION = 0.15
@@ -17,6 +18,7 @@ class Curve:
     floor_db: float | None
     first_energy: float
     error: dict | None = None
+    background: dict | None = None
 
 
 def tail_power(power):
@@ -40,7 +42,9 @@ def reverse_energy(power, noise):
 
 def integrate(signal):
     power = tuple(value * value for value in signal.pa[signal.peak_index:])
-    tail_from, noise = tail_power(power)
+    tail_from, whole = tail_power(power)
+    report = assess_background(signal, power, tail_from, whole)
+    noise = report['estimate_pa2']
     energy = reverse_energy(power, noise)
     initial = energy[0]
     floor = 10 * log10(noise / initial) if noise > 0 and initial > 0 else None
@@ -50,7 +54,9 @@ def integrate(signal):
         error = reason('TAIL_TOO_SHORT')
     elif initial <= 0:
         error = reason('DYNAMIC_RANGE')
+    elif report['decision'] == 'undecided':
+        error = reason('NOISE_UNSTABLE')
     else:
         error = None
     db = [10 * log10(value / initial) if value > 0 and initial > 0 else None for value in energy]
-    return Curve(signal, power, db, tail_from, noise, floor, initial, error)
+    return Curve(signal, power, db, tail_from, noise, floor, initial, error, report)

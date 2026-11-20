@@ -25,8 +25,19 @@ def noise_gate(curve):
     depth = -curve.db[depth_at] if depth_at is not None else 0.0
     snr = 10 * log10(max(curve.power) / curve.noise_power) if max(curve.power) and curve.noise_power else None
     error = curve.error or (reason('DYNAMIC_RANGE') if depth < 25.0 else None)
+    supports_t20 = error is None and depth >= 25.0
+    supports_t30 = error is None and depth >= 35.0
+    if error and error['code'] == 'NOISE_UNSTABLE':
+        decay_class = 'REMEASURE'
+    elif supports_t30:
+        decay_class = 'T30'
+    elif supports_t20:
+        decay_class = 'T20'
+    else:
+        decay_class = 'NONE'
     return {'band_hz': signal.hz, 'noise_power_pa2': curve.noise_power, 'floor_db': curve.floor_db,
             'peak_to_noise_db': snr, 'required_margin_db': MARGIN_DB, 'usable_depth_db': depth,
             'usable_index': usable_limit, 'usable_until_s': usable_limit / signal.rate if usable_limit >= 0 else None,
-            'noise_from_s': curve.tail_from / signal.rate, 'supports_t20': error is None and depth >= 25.0,
-            'supports_t30': error is None and depth >= 35.0, 'error': error}
+            'noise_from_s': curve.tail_from / signal.rate, 'supports_t20': supports_t20,
+            'supports_t30': supports_t30, 'decay_class': decay_class, 'background': curve.background,
+            'error': error}

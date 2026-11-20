@@ -45,12 +45,12 @@
         <div class="kpi"><span>拟合标差</span><strong id="flagged">—</strong><small>频带</small></div>
       </div>
       <div id="analysis" class="analysis grid">
-        <section class="panel graph" id="decay"><div class="panel-head"><div><h2>能量衰减</h2><span class="muted" id="frequency">— Hz</span></div><div class="legend"><span><i></i>积分曲线</span><span><i></i>拟合区间</span><span><i></i>噪声底</span></div></div>
+        <section class="panel graph" id="decay"><div class="panel-head"><div><h2>能量衰减</h2><span class="muted" id="frequency">— Hz</span></div><div class="legend"><span><i></i>积分曲线</span><span><i></i>拟合区间</span><span><i></i>噪声底</span><span><i></i>背景段</span><span><i></i>剔除起伏</span></div></div>
           <div class="plot-box"><canvas id="plot" role="img" aria-label="能量衰减曲线"></canvas><p id="plot-empty" class="empty">请先运行提取</p></div>
           <div class="plot-foot"><label>定位采样点 <input id="cursor" type="range" min="0" max="1" value="0" disabled></label><span id="coordinate">—</span></div>
         </section>
         <section class="panel fit" id="fit"><div class="panel-head"><h2>拟合时段</h2><span class="muted">RT60 / s</span></div><div id="fit-tiles" class="body"><p class="empty">等待回归区间</p></div></section>
-        <section class="panel noise" id="noise"><div class="panel-head"><h2>噪声判废</h2><span class="muted">尾段噪声估计</span></div><div id="noise-body" class="body"><p class="empty">等待噪声测量</p></div></section>
+        <section class="panel noise" id="noise"><div class="panel-head"><h2>噪声判废</h2><span class="muted">背景段与衰减档位</span></div><div id="noise-body" class="body"><p class="empty">等待噪声测量</p></div></section>
         <section class="panel reconcile" id="reconcile"><div class="panel-head"><h2>频段勾稽</h2><span id="balance" class="muted">—</span></div><div id="band-table" class="table-wrap"><p class="empty">暂无频带结论</p></div></section>
       </div>
       <div class="grid auxiliary">

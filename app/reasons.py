@@ -6,6 +6,7 @@ REASONS = {
     'MISSING_POINTS': '记录中间存在缺采样点', 'TRUNCATED_BAND': '记录尾部短于声明长度',
     'EXTRA_POINTS': '采样点超出声明长度', 'ROW_ISOLATED': '该频带存在无效采样行',
     'NO_ENERGY': '有效响应能量为零', 'TAIL_TOO_SHORT': '直达声后没有足够尾段',
+    'NOISE_UNSTABLE': '尾段背景起伏无法界定，退回补测',
     'DYNAMIC_RANGE': '声衰减深度不足', 'WINDOW_TOO_SHORT': '回归区间采样点不足',
     'NON_DECAYING': '回归斜率无效', 'LOW_LINEARITY': '回归线性度低于阈值',
     'T_DISAGREEMENT': 'T20 与 T30 差异超过阈值', 'DUPLICATE_ROW': '同一采样点的相同副本',

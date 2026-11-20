@@ -6,6 +6,8 @@
 .legend i { width: 9px; height: 2px; background: var(--accent); }
 .legend span:nth-child(2) i { background: var(--fit); }
 .legend span:nth-child(3) i { background: var(--noise); }
+.legend span:nth-child(4) i { background: #3a7c11; }
+.legend span:nth-child(5) i { background: #b03030; }
 .plot-foot { min-height: 34px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px 8px; padding: 0 16px 8px; color: var(--muted); font-size: 11px; }
 .plot-foot label { display: flex; align-items: center; gap: 7px; }
 .plot-foot input { width: 93px; accent-color: var(--accent-dark); }

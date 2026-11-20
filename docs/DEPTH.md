@@ -9,9 +9,9 @@
 |---|---|---|---|---|
 | M1 脉冲响应收件 | 导入带时间索引的 CSV，定位缺点和矛盾 | `POST /api/intake` | `app/modules/m1_intake/reader.py` `app/modules/m1_intake/continuity.py` | `tests/test_intake.py` |
 | M2 量纲校准 | 查看压力系数、直达声索引和来源行 | `GET /api/calibration/{source_id}` | `app/modules/m2_calibration/units.py` | `tests/test_calibration.py` |
-| M3 能量衰减 | 检查扣噪后反向能量积分结果 | `GET /api/decay/{source_id}` | `app/modules/m3_decay/integral.py` `app/modules/m3_decay/service.py` | `tests/test_decay.py` |
+| M3 能量衰减 | 检查扣噪后反向能量积分结果 | `GET /api/decay/{source_id}` | `app/modules/m3_decay/integral.py` `app/modules/m3_decay/background.py` `app/modules/m3_decay/service.py` | `tests/test_decay.py` `tests/test_background.py` |
 | M4 拟合时段 | 读取 T20 与 T30 时间窗、回归系数及质量 | `GET /api/fit/{source_id}` | `app/modules/m4_fit/windows.py` `app/modules/m4_fit/regression.py` | `tests/test_fit.py` |
-| M5 噪声判废 | 核对尾段噪声和两档动态范围 | `GET /api/noise/{source_id}` | `app/modules/m5_noise/gate.py` | `tests/test_noise.py` |
+| M5 噪声判废 | 核对背景段判定、剔除起伏和衰减档位 | `GET /api/noise/{source_id}` | `app/modules/m5_noise/gate.py` `app/modules/m3_decay/background.py` | `tests/test_noise.py` `tests/test_background.py` |
 | M6 频段勾稽 | 对频带和采样行勾稽，查看双档差异 | `GET /api/reconcile/{source_id}` | `app/modules/m6_reconcile/service.py` `app/modules/m6_reconcile/comparison.py` | `tests/test_reconcile.py` |
 | M7 复测归档 | 保存证据、重跑原输入并下载 | `POST /api/runs` | `app/modules/m7_archive/service.py` `app/modules/m7_archive/export.py` | `tests/test_archive.py` |
 
@@ -32,6 +32,8 @@
 | TRAP-16 | 2000 Hz 尾段截断 | 短尾误当背景噪声 | 核对声明长度 | `app/modules/m1_intake/continuity.py` | `tests/test_intake.py::test_missing_points_and_truncated_tail_are_different` |
 | TRAP-18 | 零字节、全空与仅表头 | 记录空结果为成功 | 返回独立的文件级原因 | `app/modules/m1_intake/reader.py` | `tests/test_intake.py::test_empty_cases_raise_distinct_codes` |
 | TRAP-19 | 测试中一个低块夹在可用区间 | 瞬态低块误判整个尾段 | 连续两块才截断 | `app/modules/m5_noise/gate.py` | `tests/test_noise.py::test_consecutive_low_blocks_cut_at_first_block` |
+| TRAP-24 | 夜测空调启停，尾段噪声忽高忽低 | 整段估计抬高背景压掉档位；取最安静段把瞬时静音当背景 | 十等分块分离检验，平稳段须 ≥3 块、覆盖 ≥40% 且自身平稳，高块标记剔除且原始记录保留，无法界定退回补测 | `app/modules/m3_decay/background.py` | `tests/test_background.py::test_cycling_tail_uses_stable_segment_and_keeps_original_records` |
+| TRAP-25 | 尾段仅单调缓降（衰减余量） | 缓降被当成启停起伏误剔除 | 无 ≥4 dB 高低分离仍按整段估计 | `app/modules/m3_decay/background.py` | `tests/test_background.py::test_gradual_drift_tail_stays_whole` |
 | TRAP-23 | 测试曲线阈值等于样本值 | 跳过等号或将越界点纳入 | 明确交点与回归右端排除 | `app/modules/m4_fit/windows.py` | `tests/test_fit.py::test_threshold_crossing_interpolates_and_has_exclusive_stop` |
 
 ## 对账断言
